@@ -12,7 +12,9 @@ export class TransactionController {
         await this.transactionService.getLatestBlockNumber();
       return { latestBlockNumber };
     } catch (error) {
-      throw new Error('Не удалось получить последний номер блока');
+      throw new Error(
+        `Не удалось получить последний номер блока ${error.message}`,
+      );
     }
   }
 
@@ -22,7 +24,9 @@ export class TransactionController {
       const block = await this.transactionService.getBlockByNumber(blockNumber);
       return block;
     } catch (error) {
-      throw new Error(`Не удалось получить блок ${blockNumber}`);
+      throw new Error(
+        `Не удалось получить блок ${blockNumber}: ${error.message}`,
+      );
     }
   }
 
@@ -32,7 +36,7 @@ export class TransactionController {
       await this.transactionService.saveTransactions();
       return 'Транзакции успешно сохранены';
     } catch (error) {
-      throw new Error('Ошибка при сохранении транзакций');
+      throw new Error(`Ошибка при сохранении транзакций ${error.message}`);
     }
   }
 }

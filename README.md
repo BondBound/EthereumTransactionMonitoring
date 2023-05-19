@@ -30,6 +30,9 @@ Ethereum Transaction Monitoring
 $ npm install
 ```
 
+```bash
+$ typeorm migration:run
+```
 
 ## Running the app
 

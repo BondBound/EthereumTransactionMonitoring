@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression, Interval } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -12,7 +12,7 @@ export class TransactionService {
     private readonly transactionRepository: Repository<TransactionEntity>,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_3_HOURS)
   async handleCron() {
     this.saveTransactions();
   }
@@ -59,19 +59,11 @@ export class TransactionService {
         blockNumber++
       ) {
         const block = await this.getBlockByNumber(blockNumber);
-        const transactions = block.transactions;
+        const transactions = block.transactions || [];
 
-        if (Array.isArray(transactions)) {
-          transactions.forEach((transaction) => {
-            const { from, to, value } = transaction;
-            if (!from || !to || !value) {
-              console.warn(
-                'Пропущена транзакция с пустыми полями:',
-                transaction,
-              );
-              return;
-            }
-
+        transactions.forEach((transaction) => {
+          const { from, to, value } = transaction;
+          if (from && to && value) {
             const transactionEntity = new TransactionEntity();
             transactionEntity.blockNumber = blockNumber;
             transactionEntity.from = from;
@@ -79,18 +71,21 @@ export class TransactionService {
             transactionEntity.value = value;
 
             transactionsToSave.push(transactionEntity);
-          });
-        } else {
-          console.log('Блок', blockNumber, 'не содержит транзакций');
-        }
+          } else {
+            console.warn('Пропущена транзакция с пустыми полями:', {
+              to: transaction.to,
+              from: transaction.from,
+              value: transaction.value,
+            });
+          }
+        });
       }
 
       await this.transactionRepository.save(transactionsToSave);
 
       console.error('Все транзакции успешно сохранены');
     } catch (error) {
-      console.error(error);
-      throw new Error('Не удалось сохранить транзакции');
+      throw new Error(`Не удалось сохранить транзакции: ${error.message}`);
     }
   }
 }

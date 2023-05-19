@@ -15,7 +15,7 @@ export class HigherBalanceChangeController {
       return highestBalanceChange;
     } catch (error) {
       throw new Error(
-        'Не удалось получить адрес с наибольшим изменением баланса',
+        `Не удалось получить адрес с наибольшим изменением баланса ${error.message}`,
       );
     }
   }
