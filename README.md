@@ -46,3 +46,17 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+
+## Endpoints
+
+```bash
+# адрес с наибольшим изменением баланса за последние 100 блоков
+$ http://localhost:3000/higher-balance-change/address
+
+# номер последнего блока в сети 
+$ http://localhost:3000/transactions/latest-block
+
+# данные по конкретному блоку в сети
+$ http://localhost:3000/transactions/:id
+```

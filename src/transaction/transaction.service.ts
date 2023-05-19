@@ -12,7 +12,7 @@ export class TransactionService {
     private readonly transactionRepository: Repository<TransactionEntity>,
   ) {}
 
-  @Cron(CronExpression.EVERY_3_HOURS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleCron() {
     this.saveTransactions();
   }
